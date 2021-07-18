@@ -13,7 +13,7 @@ Graph Query Language : creates Fast and Flexible API's, giving client the comple
 
 Unlike graphs used in charts, or excel., Here graph denotes a way of approach to view your application data and how your data related to one another.Here we declare the structure/fields of a data we need, this is called as **_types_** (just like collections in mongodb)
 
-# Why Graphrl is used && why it is popular
+# Why GraphQL is used && why it is popular
 
 1. fast
    1. In Rest api, we fetch details or data based on the endpoint, if we need other details based on current data then we do need to create a new REST call to server with our query. This is not the case in the GraphQL, Since it has only one endpoint exposed while fetching data we query everything we need and graphQL fetches it once and for all.
@@ -75,5 +75,5 @@ query {
 }
 ```
 
-### Mutation : Being able to change data
-### Subscription : allows us to watch data for changes(better suited for real time applications)
+3. ### Mutation : Being able to change data
+4. ### Subscription : allows us to watch data for changes(better suited for real time applications)
