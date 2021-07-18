@@ -40,7 +40,22 @@ Unlike graphs used in charts, or excel., Here graph denotes a way of approach to
 
 ---
 
-# [Introduction to GraphQL Queries](#queries)
+# [Queries](#queries)
+Before querying a server of graphql, you need to understand few points to create them
+
+   1. **_Type Definitions_** :
+
+        * Also known as Application schema( to be precise it defines what our data looks like)
+        * this where is we define all operations we do
+        * This is very important to work with graphql
+
+   2. **_Resolvers of API's_**:
+        * Nothing more set of functions that run for each of the opertaions that are performed on graphql server
+        * These are actual functions that run when perform any action on graphql
+
+You can checkout the code for graphql-yoga for our project in [here](./graphql-course/graphql-basics/src/index.js)
+
+---
 
 ## creating and running first graphql query
 
@@ -75,31 +90,21 @@ query {
 }
 ```
 
-3. ### Mutation : Being able to change data
-4. ### Subscription : allows us to watch data for changes(better suited for real time applications)
+### Mutation : Being able to change data
+### Subscription : allows us to watch data for changes(better suited for real time applications)
 
-___
 
-# [Application of Graphql to different backends](#yoga):
+# [YogaIntegration](#yogaintegration):
 
 * This is a responsiblity of individual developer to write/query or to create their own implementation from their experienced backends to graphql
 * This means we have multiple implementations to pick from implemetation methods/clients/servers in graphql
 * For our project purpose, we're gonna use **_Yoga_** inorder to setup graphql on nodejs server
-* Before creating a server of graphql, you need to understand few points to create them
-  1. **_Type Definitions_** :
-
-        * Also known as Application schema( to be precise it defines what our data looks like)
-        * this where is we define all operations we do
-        * This is very important to work with graphql
-
-  2. **_Resolvers of API's_**:
-        * Nothing more set of functions that run for each of the opertaions that are performed on graphql server
-        * These are actual functions that run when perform any action on graphql
-<br/>
-<br/>
-* Now lets checkout the configuation steps of yoga [here](#https://github.com/dotansimha/graphql-yoga) 
-* You can checkout the code for graphql-yoga for our project in [here](#./graphql-course/graphql-basics/src/index.js)
+* Now lets checkout the configuation steps of yoga [here](https://github.com/dotansimha/graphql-yoga)
+* You can checkout the code for graphql-yoga for our project in [here](./graphql-course/graphql-basics/src/index.js)
 * Now when you run your code from above file, and open up application from http://localhost:4000 we can to see graphQL playground where we can query our queries in the playground <br/>
-<br/>
+
+
+This is the first graphql query from nodejs
 !['This is the first graphql query from nodejs'](2021-07-18-15-53-17.png) <br/>
+Displaying all our data
 !['Displaying all our data'](2021-07-18-15-56-47.png)
