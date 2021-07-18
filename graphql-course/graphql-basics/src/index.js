@@ -1,22 +1,53 @@
-import {v1,v2} from "./myModule";/*--- this is a named export---*/
-import v3 from "./myModule"; /*--- this is a default export---*/
+import { GraphQLServer } from "graphql-yoga";
 
-import {sub} from "./math";
-import add from "./math";
+//typedefinitions
+const typeDefs = `
+ # this is where graphql code goes
+ # we write our needed query in these backticks
+ # for now we only trying to query hello from online playground of graphql : https://graphql-demo.mead.io
+ # for query we use following
+ type Query {
+     # ! is used to denote that it should always return string type
+     hello: String! #this is type definition
+     name: String! #this is a type definition
+     location: String! #this is a type definition
+     bio: String! #this is a type definition
+ }
+`
 
-console.log('hello graphql');
-console.log(v1,v2,v3);
-console.log("addition1:",add(1,2));
-console.log("addition2:",add(1,'2'));
-console.log("addition3:",add(1,'a'));
-console.log("subtraction1:",sub(1,2));
-console.log("subtraction2:",sub(1,'2'));
+//resolvers of api
+/** 
+ * For opertation we intend to perform in graphql we need to that many resolvers. Thus for now we have only one operation we intend to have only one resolver
+ * */
 
-//Task1
-/**
- * 1. create a new file math.js
- * 2. define 2 functions add and subtract
- * 3. each functions takes 2 parameters and returns the result
- * 4. setup add as default and sub as named export
- * 5. import both in index.js and run both of them in index.js
- */
+const resolvers = {
+    Query: {
+        hello() {
+            /**This is executed when we query for 'hello' in our graphql query */
+            return 'This is my first query..!!'
+        },
+        name() {
+            /**This is executed when we query for 'name' in our graphql query */
+            return 'This is returned from "name" resolver'
+        },
+        location() {
+            /**This is executed when we query for 'location' in our graphql query */
+            return 'This is from "location" resolver'
+        },
+        bio() {
+            /**This is executed when we query for 'bio' in our graphql query */
+            return 'This is from "bio" resolver'
+        }
+    }
+}
+
+//declaring a server with new graphql server
+const server = new GraphQLServer({
+    typeDefs: typeDefs,
+    resolvers: resolvers
+})
+//lets start a server 
+// the server runs at port 4000 by default
+server.start(() => {
+    console.log('Server is started at port 4000');
+})
