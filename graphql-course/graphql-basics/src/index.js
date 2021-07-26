@@ -1,40 +1,75 @@
 import { GraphQLServer } from "graphql-yoga";
+// Demo Posts data
+
+const posts=[
+  {
+    id: '1',
+    title: 'First Post',
+    body: 'Content of the post',
+    published: false,
+    authorId:'1' 
+  },
+  {
+    id: '1',
+    title: 'Some Post',
+    body: 'Content...!!!',
+    published: true,
+    authorId:'2' 
+  },
+  {
+    id: '4',
+    title: 'Demo Post',
+    body: 'Content of the post',
+    published: false,
+    authorId:'1' 
+  }
+]
+//Demo Users data
+const users=[
+  {
+    'id':"1",
+    name:"Abhishek",
+    email:"abhi@course.com",
+    age:25
+  },
+  {
+    'id':"2",
+    name:"Nagarjuna",
+    email:"nagarjuna@course.com",
+    age:25
+  },
+  {
+    'id':"3",
+    name:"Jeevana",
+    email:"jeevana@course.com",
+  },
+  {
+    'id':"4",
+    name:"Divya",
+    email:"divya@course.com",
+  },
+]
 
 //typedefinitions
 const typeDefs = `
 type Query{
-        greeting(name: String):String! #operational arguements
-        grades: [Int]! #working with arrays
-        me:User!
-    }
-    type User{
-       id: ID!
-       name: String!
-       age: Int
-    } 
-#=====
-#===== Custom Query
-#type Query{
-#    me:User! #this denotes custom type
-#}
-#type User{
-#   id: ID!
-#   name: String!
-#   age: Int
-#} 
-#=====
-#===== Introduction
- # this is where graphql code goes
- # we write our needed query in these backticks
- # for now we only trying to query hello from online playground of graphql : https://graphql-demo.mead.io
- # for query we use following
- #type Query {
- #    # ! is used to denote that it should always return string type
- #    hello: String! #this is type definition
- #    name: String! #this is a type definition
- #    location: String! #this is a type definition
- #    bio: String! #this is a type definition
- #}
+  me:User!
+  users(queryName:String):[User!]! #fetch all authors of our application, note: This is a CUSTOM TYPED Array
+  post(queryTitleOrBody:String):[Post!]!
+}
+type User{
+ id: ID!
+ name: String!
+ email:String!
+ age: Int
+} 
+type Post{
+  id:ID!
+  title:String!
+  body:String!
+  published:Boolean!
+  authorId:ID!
+}
 `;
 
 //resolvers of api
@@ -44,38 +79,23 @@ type Query{
 
 const resolvers = {
   Query: {
-    greeting(parent,args,ctx,info){ //operational query resolver
-        console.log(args);
-        return 'Hello '+((args.name)?(args.name):(''))+', Welcome to GraphQL'
-    },
-    grades(parent,args,ctx,info){ // working with arrays resolver
-        return [99,66,74,90];
+    users(parent,args,ctx,info){
+      if(args.queryName){
+        return users.filter(e=>e.name.toLowerCase().includes(args.queryName.toLowerCase()));
+      }else{
+        return users;
+      }
     },
     me() { //custom query resolver
-      return {
-        id: "12308",
-        name: "Abhishek",
-        age: 25,
-      };
+      return users.find(e=>e.name=='Abhishek');
     },
-    /**
-        *hello() {
-        //This is executed when we query for 'hello' in our graphql query
-            return 'This is my first query..!!'
-        },
-        name() {
-            //This is executed when we query for 'name' in our graphql query
-            return 'This is returned from "name" resolver'
-        },
-        location() {
-            //This is executed when we query for 'location' in our graphql query
-            return 'This is from "location" resolver'
-        },
-        bio() {
-            //This is executed when we query for 'bio' in our graphql query
-            return 'This is from "bio" resolver'
-        }
-         */
+    post(parent,args,ctx,info) {
+      if(args.queryTitleOrBody){
+        return posts.filter(e=>e.title.toLowerCase().includes(args.queryTitleOrBody.toLowerCase())||e.body.toLowerCase().includes(args.queryTitleOrBody.toLowerCase()))
+      }else{
+        return posts;
+      }
+    },
   },
 };
 
@@ -89,3 +109,100 @@ const server = new GraphQLServer({
 server.start(() => {
   console.log("Server is started at port 4000");
 });
+
+//----------------------------Simple input and output
+// Query Input
+/**
+ * query{
+	users{
+    name
+    age
+  }
+  me{
+    id
+    email
+  }
+}
+ */
+//------------------------------
+//Query Output
+/**
+ * {
+  "data": {
+    "users": [
+      {
+        "name": "Abhishek",
+        "age": 25
+      },
+      {
+        "name": "Nagarjuna",
+        "age": 25
+      },
+      {
+        "name": "Jeevana",
+        "age": null
+      },
+      {
+        "name": "Divya",
+        "age": null
+      }
+    ],
+    "me": {
+      "id": "1",
+      "email": "abhi@course.com"
+    }
+  }
+}
+ *  */
+//----------------------------Query Users with operational arguements on custom typed array
+// Query Input
+/**
+ * query{
+	users(query:"na"){
+    name
+    age
+  }
+}
+ */
+//------------------------------
+//Query Output
+/**
+ * {
+  "data": {
+    "users": [
+      {
+        "name": "Nagarjuna",
+        "age": 25
+      },
+      {
+        "name": "Jeevana",
+        "age": null
+      }
+    ],
+  }
+}
+*/
+//----------------------------Query for post with operational arguements
+// Query Input
+/**
+ * query{
+	post(queryTitleOrBody:"demo"){
+    title
+    authorId
+  }
+}
+ */
+//------------------------------
+//Query Output
+/**
+ * {
+  "data": {
+    "post": [
+      {
+        "title": "Demo Post",
+        "authorId": "1"
+      }
+    ]
+  }
+}
+*/
