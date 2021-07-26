@@ -2,9 +2,9 @@ import { GraphQLServer } from "graphql-yoga";
 
 //typedefinitions
 const typeDefs = `
-#===== Operational Arguements
 type Query{
-        greeting(name: String):String!
+        greeting(name: String):String! #operational arguements
+        grades: [Int]! #working with arrays
         me:User!
     }
     type User{
@@ -44,11 +44,14 @@ type Query{
 
 const resolvers = {
   Query: {
-    greeting(parent,args,ctx,info){
+    greeting(parent,args,ctx,info){ //operational query resolver
         console.log(args);
         return 'Hello '+((args.name)?(args.name):(''))+', Welcome to GraphQL'
     },
-    me() {
+    grades(parent,args,ctx,info){ // working with arrays resolver
+        return [99,66,74,90];
+    },
+    me() { //custom query resolver
       return {
         id: "12308",
         name: "Abhishek",

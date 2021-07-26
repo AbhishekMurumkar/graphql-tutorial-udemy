@@ -23,7 +23,7 @@ Now in order to receive those params from the type definition we can use built i
 2. args : sends the information regarding args sent from type definition to resolver
 3. context(ctx) : this is useful for contextual data (like if user is logged in context data denotes information about user which can be accessible through out the application)
 4. info : contains details about actual operations that were sent along to server
-   
+
 Thus we need to create a resolver `Test` to handle `Test` type Definition along with **args** param
 
 ```javascript
@@ -34,7 +34,7 @@ Test{
 }
 ```
 
-Check [here](graphql-course/graphql-basics/src/index.js) in project development 
+Check [here](graphql-course/graphql-basics/src/index.js) in project development
 
 ### Output from Project Development/above file link
 

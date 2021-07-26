@@ -1,7 +1,9 @@
 # graphql-tutorial-udemy
+
 graphql-tutorial-udemy
 
-## Note:
+## Note
+
 YOu can find all graphql explanations and official documentation (including applying graphql to various backends) [here](#http://spec.graphql.org/draft/)
 
 ## Index
@@ -15,5 +17,5 @@ YOu can find all graphql explanations and official documentation (including appl
    4. [Introduction to graphQL Queries](./GettingStarted.md#queries)
    5. [Applying GraphQL in NodeJS via Yoga](./GettingStarted.md#yogaintegration)
    6. [Operation Arguements](./operationArguements.md)
-4. ['GraphQL Datatypes'](./GraphqlDatatypes.md)
+4. ['GraphQL Datatypes-[Custom and Arrays]'](./GraphqlDatatypes.md)
 5. [Project Structure](./Project-Intro.md)

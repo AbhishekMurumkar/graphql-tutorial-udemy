@@ -7,7 +7,12 @@ const typeDefs = `
 # 2. set up 'add' to take 2 args(a,b) which are required float
 # 3. have a resolver send back the sum of 2 args
 type Query{
+
+    # this query allows us only to add 2 floats only
         add(a:Float!,b:Float!):Float!
+
+    #this query allows us to add any number of floats
+        addViaArrays(numbers:[Float!]):Float!
     }
 #=====
 `;
@@ -21,8 +26,12 @@ const resolvers = {
     Query: {
         add(parent, args, ctx, info) {
             console.log(args);
-            return args.a+args.b;
-        }
+            return args.a + args.b;
+        },
+        addViaArrays(parent, args, ctx, info) {
+            console.log(args);
+            return args.numbers.reduce((e, sum) => sum + e, 0.0);
+        },
     },
 };
 
@@ -36,3 +45,19 @@ const server = new GraphQLServer({
 server.start(() => {
     console.log("Server is started at port 4000");
 });
+
+/**
+ * Inputs
+ * query{
+ add(a:1,b:2)
+ addViaArrays(numbers:[2.3,4.0,1.55,3.56])
+}
+ *
+ *ouput
+ *{
+  "data": {
+    "add": 3,
+    "addViaArrays": 11.41
+  }
+}
+*/

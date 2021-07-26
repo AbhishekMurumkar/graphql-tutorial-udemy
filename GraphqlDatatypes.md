@@ -25,3 +25,33 @@
 
 Note: while specifying the custom values in type definition, you always need to specify the scalars present in them
 Check file [here](./graphql-course/graphql-basics/src/index.js) (Check custom queries)
+
+### Working with arrays
+
+Syntax:
+
+```graphql
+type Query{
+   testArray: [Int!] #this declares an integer array is needed for testArray
+   # Int! - denotes each element of array is non-nullable and should be an Integer
+}
+```
+
+Now in resolver
+
+```javascript
+   testArray(){
+      //return data that you want show to user
+      return [1,2,3,54];
+   }
+```
+
+check `grades` definition in [here](graphql-course/graphql-basics/src/index.js) for more.
+
+Lets checkout output from above link <br>
+!['arrays'](2021-07-26-06-24-39.png)
+
+### Notice: that for above scalar-type of array we dont need to define any argument while using arrays.
+
+But this is not the case for the custom-type of arrays. At that time we need to specify the fields we need while fetching data
+!['custom-typed arrays'](2021-07-26-06-26-58.png)
