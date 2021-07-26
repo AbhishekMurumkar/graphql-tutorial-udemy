@@ -14,8 +14,9 @@ YOu can find all graphql explanations and official documentation (including appl
    1. Where it is used
    2. what is graph
    3. [advantages](./GettingStarted.md#advantages)
-   4. [Introduction to graphQL Queries](./GettingStarted.md#queries)
-   5. [Applying GraphQL in NodeJS via Yoga](./GettingStarted.md#yogaintegration)
-   6. [Operation Arguements](./operationArguements.md)
-4. ['GraphQL Datatypes-[Custom and Arrays]'](./GraphqlDatatypes.md)
-5. [Project Structure](./Project-Intro.md)
+   4. [Applying GraphQL in NodeJS via Yoga -- Initial setup of application env](./GettingStarted.md#yogaintegration)
+   5. [Introduction to graphQL Queries](./GettingStarted.md#queries)
+   6. [GraphQL Datatypes-(Custom and Arrays)](./GraphqlDatatypes.md)
+   7. [Operation Arguements](./operationArguements.md)
+   8. [Relational Data basics](./relationaldata.md)
+4. [Project Structure](./Project-Intro.md)

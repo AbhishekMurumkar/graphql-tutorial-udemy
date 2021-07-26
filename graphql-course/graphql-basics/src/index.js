@@ -7,21 +7,21 @@ const posts=[
     title: 'First Post',
     body: 'Content of the post',
     published: false,
-    authorId:'1' 
+    author:'1' 
   },
   {
     id: '1',
     title: 'Some Post',
     body: 'Content...!!!',
     published: true,
-    authorId:'2' 
+    author:'2' 
   },
   {
     id: '4',
     title: 'Demo Post',
     body: 'Content of the post',
     published: false,
-    authorId:'1' 
+    author:'4' 
   }
 ]
 //Demo Users data
@@ -61,14 +61,15 @@ type User{
  id: ID!
  name: String!
  email:String!
- age: Int
+ age: Int,
+ posts:[Post!]!
 } 
 type Post{
   id:ID!
   title:String!
   body:String!
   published:Boolean!
-  authorId:ID!
+  author:User! #relational data
 }
 `;
 
@@ -78,6 +79,22 @@ type Post{
  * */
 
 const resolvers = {
+  // Users and posts are having 1-to-M bi-directional-relationship
+  Post:{
+    //this is our custom object to perform relational search on post to users data
+    //this runs before query--not because it is above to query object
+    author(parent,args,ctx,info){
+      // we use parent here because
+      // we need to access field 'author' parent present in post
+      // thus parent denotes 'post' object 
+      return users.find(e=>e.id==parent.author);
+    }
+  },
+  User:{
+    posts(parent,args,ctx,info){
+      return posts.filter(e=>e.author==parent.id);
+    }
+  },
   Query: {
     users(parent,args,ctx,info){
       if(args.queryName){
@@ -109,6 +126,152 @@ const server = new GraphQLServer({
 server.start(() => {
   console.log("Server is started at port 4000");
 });
+// for clear understading , you can study below inputs and outputs from bottom to top order
+//----------------------------Query for relational data from user -> post
+// Query Input
+/**
+ * query{
+	users{
+    name
+    posts{
+      title
+    }
+  }
+}
+ */
+//------------------------------
+//Query Output
+/**
+ * {
+  "data": {
+    "users": [
+      {
+        "name": "Abhishek",
+        "posts": [
+          {
+            "title": "First Post"
+          }
+        ]
+      },
+      {
+        "name": "Nagarjuna",
+        "posts": [
+          {
+            "title": "Some Post"
+          }
+        ]
+      },
+      {
+        "name": "Jeevana",
+        "posts": []
+      },
+      {
+        "name": "Divya",
+        "posts": [
+          {
+            "title": "Demo Post"
+          }
+        ]
+      }
+    ]
+  }
+}
+*/
+
+//----------------------------Query for relational data from post -> user
+// Query Input
+/**
+ * query{
+	post{
+    title
+    author{
+      name
+    }
+  }
+}
+ */
+//------------------------------
+//Query Output
+/**
+ * {
+  "data": {
+    "post": [
+      {
+        "title": "First Post",
+        "author": {
+          "name": "Abhishek"
+        }
+      },
+      {
+        "title": "Some Post",
+        "author": {
+          "name": "Nagarjuna"
+        }
+      },
+      {
+        "title": "Demo Post",
+        "author": {
+          "name": "Divya"
+        }
+      }
+    ]
+  }
+}
+*/
+
+//----------------------------Query for post with operational arguements
+// Query Input
+/**
+ * query{
+	post(queryTitleOrBody:"demo"){
+    title
+    authorId
+  }
+}
+ */
+//------------------------------
+//Query Output
+/**
+ * {
+  "data": {
+    "post": [
+      {
+        "title": "Demo Post",
+        "authorId": "1"
+      }
+    ]
+  }
+}
+*/
+
+//----------------------------Query Users with operational arguements on custom typed array
+// Query Input
+/**
+ * query{
+	users(query:"na"){
+    name
+    age
+  }
+}
+ */
+//------------------------------
+//Query Output
+/**
+ * {
+  "data": {
+    "users": [
+      {
+        "name": "Nagarjuna",
+        "age": 25
+      },
+      {
+        "name": "Jeevana",
+        "age": null
+      }
+    ],
+  }
+}
+*/
 
 //----------------------------Simple input and output
 // Query Input
@@ -154,55 +317,3 @@ server.start(() => {
   }
 }
  *  */
-//----------------------------Query Users with operational arguements on custom typed array
-// Query Input
-/**
- * query{
-	users(query:"na"){
-    name
-    age
-  }
-}
- */
-//------------------------------
-//Query Output
-/**
- * {
-  "data": {
-    "users": [
-      {
-        "name": "Nagarjuna",
-        "age": 25
-      },
-      {
-        "name": "Jeevana",
-        "age": null
-      }
-    ],
-  }
-}
-*/
-//----------------------------Query for post with operational arguements
-// Query Input
-/**
- * query{
-	post(queryTitleOrBody:"demo"){
-    title
-    authorId
-  }
-}
- */
-//------------------------------
-//Query Output
-/**
- * {
-  "data": {
-    "post": [
-      {
-        "title": "Demo Post",
-        "authorId": "1"
-      }
-    ]
-  }
-}
-*/
