@@ -2,15 +2,26 @@ import { GraphQLServer } from "graphql-yoga";
 
 //typedefinitions
 const typeDefs = `
-#== Custom Query
+#===== Operational Arguements
 type Query{
-    me:User!
-}
-type User{
-   id: ID!
-   name: String!
-   age: Int
-} 
+        greeting(name: String):String!
+        me:User!
+    }
+    type User{
+       id: ID!
+       name: String!
+       age: Int
+    } 
+#=====
+#===== Custom Query
+#type Query{
+#    me:User! #this denotes custom type
+#}
+#type User{
+#   id: ID!
+#   name: String!
+#   age: Int
+#} 
 #=====
 #===== Introduction
  # this is where graphql code goes
@@ -33,12 +44,16 @@ type User{
 
 const resolvers = {
   Query: {
+    greeting(parent,args,ctx,info){
+        console.log(args);
+        return 'Hello '+((args.name)?(args.name):(''))+', Welcome to GraphQL'
+    },
     me() {
-        return {
-            id:'12308',
-            name:'Abhishek',
-            age:25
-        }
+      return {
+        id: "12308",
+        name: "Abhishek",
+        age: 25,
+      };
     },
     /**
         *hello() {
