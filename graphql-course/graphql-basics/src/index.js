@@ -17,7 +17,6 @@ import { GraphQLServer } from "graphql-yoga";
  *  7. run a sample query that gets all users and their comments
  */
 
-
 // Demo comments data
 const comments=[
   {
