@@ -148,9 +148,28 @@ type Comment{
 }
 
 type Mutation{
-  createUser(name:String!,email:String!,age:Int): User!
-  createPost(title:String!,body:String!,published:Boolean!,author:ID!):Post!
-  createComment(text:String!,post:ID!,author:ID!):Comment!
+  createUser(data:CreateUserInput): User!
+  createPost(data:CreatePostInput):Post!
+  createComment(data:CreateCommentInput):Comment!
+}
+
+input CreateUserInput{
+  name:String!
+  email:String!
+  age:Int
+}
+
+input CreatePostInput{
+  title:String!
+  body:String!
+  published:Boolean!
+  author:ID!
+}
+
+input CreateCommentInput{
+  text:String!
+  post:ID!
+  author:ID!
 }
 `;
 
@@ -162,34 +181,32 @@ type Mutation{
 const resolvers = {
   Mutation:{
     createUser(parent,args,ctx,info){
-      let emailPresent = users.some(u=> u.email == args.email);
+      let emailPresent = users.some(u=> u.email == args.data.email);
       if(emailPresent){
         throw new Error('Email Already Taken')
       }
       let newUser = {
         'id':uuidv4(),
-        'name':args.name,
-        'email':args.email,
-        'age':args.age,
+        ...args.data
       };
       users.push(newUser);
       return newUser; 
     },
     createPost(parent,args,ctx,info){
-      let userPresent = users.some(u=>u.id==args.author);
+      let userPresent = users.some(u=>u.id==args.data.author);
       if(!userPresent){
         throw new Error("No Valid User Found with given ID");
       }
       let newPost = {
         'id':uuidv4(),
-        ...args
+        ...args.data
       };
       posts.push(newPost);
       return newPost;
     },
     createComment(parent,args,ctx,info){
-      let userPresent = users.some(u=>u.id==args.author);
-      let postPresent = posts.find(p=>p.id==args.post);
+      let userPresent = users.some(u=>u.id==args.data.author);
+      let postPresent = posts.find(p=>p.id==args.data.post);
       console.log("Post",postPresent);
       if(!userPresent){ throw new Error("User Doesnt exist"); }
       else if(!postPresent){ throw new Error("Post Doesnt Exist");} 

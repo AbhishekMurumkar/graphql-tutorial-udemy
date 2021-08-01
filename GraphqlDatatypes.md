@@ -2,6 +2,7 @@
 
 1. ['Scaler'](#scalar)
 2. ['Custom'](#vector)
+3. ["Input"](#input)
 
 ## [Scalar](#scalar)
 
@@ -55,3 +56,50 @@ Lets checkout output from above link <br>
 
 But this is not the case for the custom-type of arrays. At that time we need to specify the fields we need while fetching data
 !['custom-typed arrays'](2021-07-26-06-26-58.png)
+
+## [Input Type](#input)
+
+As you learnt about [Querying Data in Graphql](./GettingStarted.md#queries), there we can pass data in 2 ways
+
+1. conventional way = describe each variable name with type and stating is nullable or not
+2. Input Type = declaring all the variables we need in a form of JSON and passing the json having all of our needed data type defintions needed to the query, this allows us to create more complex queries
+
+## Working with Inputs
+
+Here to create an input, we need to create new type definition with key `input` followed by var name.
+
+```graphql
+# declaring an input data type
+input someInput{
+   #describe all the properties of data you need here
+}
+# initializing input type with type definition
+type Query{
+   sometype(myInputneeded:someInput):SomeType
+}
+# using input while querying
+# conventional querying
+query{
+   someInput(
+      #declares all of your data here
+      # here args will have only declared data
+   ){
+      # show output from resolver
+   }
+}
+# input type querying
+query{
+   someInput(
+      myInputneeded:{
+         #declare all of your data here
+         # we can have data other than declared as well, so you need access them via args.myInputneeded
+      }
+   ){
+      # show output from resolver
+   }
+}
+```
+
+> Note: see the types used above in query, they are `someInput`, same as we declared with `input` key
+
+> check Input in file [here](graphql-course/graphql-basics/src/index.js) for `CreateUserInput`

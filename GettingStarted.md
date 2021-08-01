@@ -90,9 +90,11 @@ query {
 }
 ```
 
-### Mutation : Being able to change data
+### [Mutation : Being able to change data](./mutations.md)
+
 ### Subscription : allows us to watch data for changes(better suited for real time applications)
 
+---
 
 # [YogaIntegration](#yogaintegration):
 
@@ -103,8 +105,7 @@ query {
 * You can checkout the code for graphql-yoga for our project in [here](./graphql-course/graphql-basics/src/index.js)
 * Now when you run your code from above file, and open up application from http://localhost:4000 we can to see graphQL playground where we can query our queries in the playground <br/>
 
-
-This is the first graphql query from nodejs
+This is the first graphql query from nodejs <br/>
 !['This is the first graphql query from nodejs'](2021-07-18-15-53-17.png) <br/>
-Displaying all our data
+Displaying all our data <br/>
 !['Displaying all our data'](2021-07-18-15-56-47.png)
