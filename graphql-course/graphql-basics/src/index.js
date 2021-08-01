@@ -1,4 +1,5 @@
 import { GraphQLServer } from "graphql-yoga";
+import uuidv4 from 'uuid/v4';
 
 /**
  * --------------------------- Setting Comments Data---------------------------------
@@ -24,6 +25,15 @@ import { GraphQLServer } from "graphql-yoga";
  *  5. set up a comment field on post
  *  6. set up resolver for post fields that returns all comments belonging to the post
  *  7. run a sample query that gets all posts and all their comments
+ * --------------------------- Mutating Comments Data---------------------------------
+ * 1. Define a new createComment mutation
+ *    - should take text,author id and post id as non nullable
+ *    - upon successful completion should return a comment object
+ * 2. Define a resolver method for createComment
+ *    - confirm that User exists, else throw error
+ *    - confirm that Post exists and it is published, else throw error
+ * 3. Run Mutation and add a comment
+ * 4. use comments query to verify new comment present in comments array
  */
 
 // Demo comments data
@@ -112,7 +122,7 @@ type Query{
   me:User!
   users(queryName:String):[User!]! #fetch all authors of our application, note: This is a CUSTOM TYPED Array
   post(queryTitleOrBody:String):[Post!]!
-  comments:[Comments]
+  comments:[Comment]
 }
 type User{
  id: ID!
@@ -120,7 +130,7 @@ type User{
  email:String!
  age: Int,
  posts:[Post!]
- comments:[Comments]
+ comments:[Comment]
 } 
 type Post{
   id:ID!
@@ -128,13 +138,19 @@ type Post{
   body:String!
   published:Boolean!
   author:User! #relational data
-  comments:[Comments]
+  comments:[Comment]
 }
-type Comments{
+type Comment{
   id:ID!,
   text:String!,
   author:User!
   post:Post!
+}
+
+type Mutation{
+  createUser(name:String!,email:String!,age:Int): User!
+  createPost(title:String!,body:String!,published:Boolean!,author:ID!):Post!
+  createComment(text:String!,post:ID!,author:ID!):Comment!
 }
 `;
 
@@ -144,7 +160,55 @@ type Comments{
  * */
 
 const resolvers = {
-  Comments:{
+  Mutation:{
+    createUser(parent,args,ctx,info){
+      let emailPresent = users.some(u=> u.email == args.email);
+      if(emailPresent){
+        throw new Error('Email Already Taken')
+      }
+      let newUser = {
+        'id':uuidv4(),
+        'name':args.name,
+        'email':args.email,
+        'age':args.age,
+      };
+      users.push(newUser);
+      return newUser; 
+    },
+    createPost(parent,args,ctx,info){
+      let userPresent = users.some(u=>u.id==args.author);
+      if(!userPresent){
+        throw new Error("No Valid User Found with given ID");
+      }
+      let newPost = {
+        'id':uuidv4(),
+        'title':args.title,
+        'body':args.body,
+        'published':args.published,
+        'author':args.author
+      };
+      posts.push(newPost);
+      return newPost;
+    },
+    createComment(parent,args,ctx,info){
+      let userPresent = users.some(u=>u.id==args.author);
+      let postPresent = posts.some(p=>p.id==args.post);
+      if(!userPresent){ throw new Error("User Doesnt exist"); }
+      else if(!postPresent){ throw new Error("Post Doesnt Exist");} 
+      else if(!postPresent.published){ throw new Error("Cannot Comment on Un-published posts..!!")}
+      else{
+        let newComment = {
+          'id':uuidv4(),
+          'text':args.text,
+          'post':args.post,
+          'author':args.author
+        }
+        comments.push(newComment);
+        return newComment;
+      }
+    }
+  },
+  Comment:{
     author(parent,args,ctx,info){
       console.log("parent",parent);
       return users.find(e=>e.id==parent.author);
@@ -194,11 +258,7 @@ const resolvers = {
       }
     },
     comments(parent,args,ctx,info){
-      if(args.queryUser){
         return comments;
-      }else{
-        return comments;
-      }
     }
   },
 };
@@ -214,6 +274,140 @@ server.start(() => {
   console.log("Server is started at port 4000");
 });
 // for clear understading , you can study below inputs and outputs from bottom to top order
+//----------------------------Inserting an comment with createComment resolver and displaying out details from resolver.
+// Query Input
+/**
+ * mutation{
+  createComment(
+    post:"9ed40429-bc7f-4c46-89c8-2495b03167ba",
+    author:"f507c2f8-a16e-4949-be14-9ccc5027ff5a",
+    text:"Hip hip Hurraayyyy...!!!!"
+  ){
+    text
+    author{
+      name
+    }
+    post{
+      title
+      body
+    }
+  }
+}
+ */
+// Query Output
+/**
+ * {
+  "data": {
+    "createComment": {
+      "text": "Hip hip Hurraayyyy...!!!!",
+      "author": {
+        "name": "Abhi"
+      },
+      "post": {
+        "title": "My new post",
+        "body": "Getting Started"
+      }
+    }
+  }
+}
+ */
+//---- confirming above comment in comments array
+// query input
+/**
+ * query{
+  comments{
+    text
+  }
+}
+ */
+// query output
+/**
+ * {
+  "data": {
+    "comments": [
+      {
+        "text": "nice..!!"
+      },
+      {
+        "text": "shit..!!"
+      },
+      {
+        "text": "not so great, not so terrible"
+      },
+      {
+        "text": "always a loser"
+      },
+      {
+        "text": "Hip hip Hurraayyyy...!!!!"
+      }
+    ]
+  }
+}
+ */
+//----------------------------Inserting an post with createPost resolver and displaying out details from resolver.
+//Query Input
+/**
+ * mutation{
+  createPost(
+    title:"My new post",
+    body:"Getting Started",
+    published:false,
+    author:"f507c2f8-a16e-4949-be14-9ccc5027ff5a"
+  ){
+    id
+    title
+    body
+    author{
+      name
+      email
+    }
+    comments{
+      text
+    }
+  }
+} */
+// Query Output
+/**
+ * {
+  "data": {
+    "createPost": {
+      "id": "9ed40429-bc7f-4c46-89c8-2495b03167ba",
+      "title": "My new post",
+      "body": "Getting Started",
+      "author": {
+        "name": "Abhi",
+        "email": "a1@gmail.com"
+      },
+      "comments": []
+    }
+  }
+}
+ */
+//----------------------------Inserting an user with createUser resolver and displaying out details from resolver.
+//Query Input
+/**
+ * mutation{
+  createUser(name:"Abhi",email:"a1@gmail.com"){
+    id
+    name
+    email
+    age
+  }
+}
+ */
+//Query Output
+/**
+ * {
+  "data": {
+    "createUser": {
+      "id": "f507c2f8-a16e-4949-be14-9ccc5027ff5a",
+      "name": "Abhi",
+      "email": "a1@gmail.com",
+      "age": null
+    }
+  }
+}
+ */
 //----------------------------Fetching all posts and comments present in it.
 //QueryInput
 /**

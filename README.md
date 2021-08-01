@@ -19,4 +19,5 @@ YOu can find all graphql explanations and official documentation (including appl
    6. [GraphQL Datatypes-(Custom and Arrays)](./GraphqlDatatypes.md)
    7. [Operation Arguements](./operationArguements.md)
    8. [Relational Data basics](./relationaldata.md)
-4. [Project Structure](./Project-Intro.md)
+4. [Mutations](./mutations.md)
+5. [Project Structure](./Project-Intro.md)
