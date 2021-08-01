@@ -1,3 +1,5 @@
 {
-    "presets": ["@babel/preset-env"]
+    "presets": ["@babel/preset-env"],
+    // A present means nothing but a collections of plugins all grouped together to provide some sort of behaviour,
+    "plugins": ["@babel/plugin-proposal-object-rest-spread"]
 }

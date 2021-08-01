@@ -37,3 +37,13 @@
             ```
       4. create a new file `src/MyModule.js` 
       5. Lets install a npm module used to run graphql on nodejs, which is **_Yoga_** (`npm i graphql-yoga`)
+   1. ### Installing Spread Operator via Babel plugin
+
+      1. in project's root folder, install via cmd : `npm i babel-plugin-transform-object-rest-spread` to install spread opertor support in babel
+      2. then append following lines in `.babelrc`
+
+      ```babel
+          "plugins":[
+              "transform-object-rest-spread"
+          ]
+      ```

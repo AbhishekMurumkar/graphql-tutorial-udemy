@@ -182,26 +182,22 @@ const resolvers = {
       }
       let newPost = {
         'id':uuidv4(),
-        'title':args.title,
-        'body':args.body,
-        'published':args.published,
-        'author':args.author
+        ...args
       };
       posts.push(newPost);
       return newPost;
     },
     createComment(parent,args,ctx,info){
       let userPresent = users.some(u=>u.id==args.author);
-      let postPresent = posts.some(p=>p.id==args.post);
+      let postPresent = posts.find(p=>p.id==args.post);
+      console.log("Post",postPresent);
       if(!userPresent){ throw new Error("User Doesnt exist"); }
       else if(!postPresent){ throw new Error("Post Doesnt Exist");} 
       else if(!postPresent.published){ throw new Error("Cannot Comment on Un-published posts..!!")}
       else{
         let newComment = {
           'id':uuidv4(),
-          'text':args.text,
-          'post':args.post,
-          'author':args.author
+          ...args
         }
         comments.push(newComment);
         return newComment;
@@ -271,7 +267,7 @@ const server = new GraphQLServer({
 //lets start a server
 // the server runs at port 4000 by default
 server.start(() => {
-  console.log("Server is started at port 4000");
+  console.log("Server is started at port 4000 hello3");
 });
 // for clear understading , you can study below inputs and outputs from bottom to top order
 //----------------------------Inserting an comment with createComment resolver and displaying out details from resolver.
