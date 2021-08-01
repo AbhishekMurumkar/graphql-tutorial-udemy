@@ -5,4 +5,6 @@
 
 ## Creating Data with mutations
 
-1. create a new type definition with any name in type definition string as here (anywhere but afer Query) ("./graphql-course/graphql-basics/src/index.js")
+1. create a new type definition with any name in type definition string as (anywhere but afer Query) [here]("./graphql-course/graphql-basics/src/index.js")
+
+### Deleting Data with mutations

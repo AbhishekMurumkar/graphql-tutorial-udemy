@@ -37,7 +37,7 @@ import uuidv4 from 'uuid/v4';
  */
 
 // Demo comments data
-const comments=[
+let comments=[
   {
     id:'comments_1',
     text:'nice..!!',
@@ -64,7 +64,7 @@ const comments=[
   }
 ];
 // Demo Posts data
-const posts=[
+let posts=[
   {
     id: '1',
     title: 'First Post',
@@ -91,7 +91,7 @@ const posts=[
   }
 ]
 //Demo Users data
-const users=[
+let users=[
   {
     'id':"1",
     name:"Abhishek",
@@ -149,6 +149,7 @@ type Comment{
 
 type Mutation{
   createUser(data:CreateUserInput): User!
+  deleteUser(userId:ID!):User!
   createPost(data:CreatePostInput):Post!
   createComment(data:CreateCommentInput):Comment!
 }
@@ -191,6 +192,26 @@ const resolvers = {
       };
       users.push(newUser);
       return newUser; 
+    },
+    deleteUser(parent,args,ctx,info){
+      let userIndex = users.findIndex(u=>u.id==args.userId);
+      if(userIndex == -1){ throw new Error("No User Found with given id");}
+      // removed user
+      let deletedUser = users.splice(userIndex,1);
+      console.log("deleted user",deletedUser)
+      // removed posts related to deleted user
+      posts = posts.filter(p=>p.author!=args.userId)
+      // remove comments related to deleetd user
+      comments = comments.filter(c=>c.author!=args.userId)
+      /*posts = posts.filter(post=>{
+        let match = post.author == args.userId;
+        if(match){
+          comments = comments.filter(comment=>comment.post!==post.id);
+        }
+        return !match;
+      })
+      comments = comments.filter(comment=>comment.author!=args.userId)
+      */return deletedUser[0];
     },
     createPost(parent,args,ctx,info){
       let userPresent = users.some(u=>u.id==args.data.author);
