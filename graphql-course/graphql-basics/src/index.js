@@ -58,7 +58,7 @@ import db from "./db";
 
 const resolvers = {
   Mutation:{
-    createUser(parent,args,ctx,info){
+    createUser(parent,args,{users},info){
       let emailPresent = users.some(u=> u.email == args.data.email);
       if(emailPresent){
         throw new Error('Email Already Taken')
@@ -70,7 +70,7 @@ const resolvers = {
       users.push(newUser);
       return newUser; 
     },
-    deleteUser(parent,args,ctx,info){
+    deleteUser(parent,args,{users},info){
       let userIndex = users.findIndex(u=>u.id==args.userId);
       if(userIndex == -1){ throw new Error("No User Found with given id");}
       // removed user
@@ -87,7 +87,7 @@ const resolvers = {
       });      
       return deletedUser[0];
     },
-    createPost(parent,args,ctx,info){
+    createPost(parent,args,{posts},info){
       let userPresent = users.some(u=>u.id==args.data.author);
       if(!userPresent){
         throw new Error("No Valid User Found with given ID");
@@ -99,7 +99,7 @@ const resolvers = {
       posts.push(newPost);
       return newPost;
     },
-    deletePost(parent,args,ctx,info){
+    deletePost(parent,args,{posts},info){
       let postPresent = posts.findIndex(p=>p.id==args.postId);
       if(postPresent == -1) { throw new Error("No post was found with given id")}
       // deleting post
@@ -108,7 +108,7 @@ const resolvers = {
       comments = comments.filter(comment=>comment.post!=args.postId);
       return deletedPost[0];
     },
-    createComment(parent,args,ctx,info){
+    createComment(parent,args,{comments},info){
       let userPresent = users.some(u=>u.id==args.data.author);
       let postPresent = posts.find(p=>p.id==args.data.post);
       console.log("Post",postPresent);
@@ -124,7 +124,7 @@ const resolvers = {
         return newComment;
       }
     },
-    deleteComment(parent,args,ctx,info){
+    deleteComment(parent,args,{comments},info){
       let commentPresent = comments.findIndex(comment=>comment.id==args.commentId);
       if(commentPresent == -1){throw new Error("Comment with given Id was not found");}
       let deletedComment = comments.splice(commentPresent,1,0);
@@ -163,7 +163,7 @@ const resolvers = {
     }
   },
   Query: {
-    users(parent,args,ctx,info){
+    users(parent,args,{users},info){
       if(args.queryName){
         return users.filter(e=>e.name.toLowerCase().includes(args.queryName.toLowerCase()));
       }else{
@@ -173,14 +173,14 @@ const resolvers = {
     me() { //custom query resolver
       return users.find(e=>e.name=='Abhishek');
     },
-    post(parent,args,ctx,info) {
+    post(parent,args,{posts},info) {
       if(args.queryTitleOrBody){
         return posts.filter(e=>e.title.toLowerCase().includes(args.queryTitleOrBody.toLowerCase())||e.body.toLowerCase().includes(args.queryTitleOrBody.toLowerCase()))
       }else{
         return posts;
       }
     },
-    comments(parent,args,ctx,info){
+    comments(parent,args,{comments},info){
         return comments;
     }
   },
