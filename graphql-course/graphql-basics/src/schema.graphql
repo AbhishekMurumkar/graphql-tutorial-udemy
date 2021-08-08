@@ -34,7 +34,14 @@ type Mutation{
   createComment(data:CreateCommentInput):Comment!
   deleteUser(userId:ID!):User!
   deletePost(postId:ID!):Post!
-  deleteComment(commentId:ID!):Comment!
+  deleteComment(commentId:ID!):Comment!,
+  updateUser(userId:ID!,dataToUpdate:UpdateUserInput):User!
+}
+
+input UpdateUserInput{
+  name:String
+  email:String
+  age:Int
 }
 
 input CreateUserInput{

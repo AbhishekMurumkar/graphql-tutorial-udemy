@@ -22,3 +22,103 @@ const Query = {
 }
 
 export default Query;
+
+//Queries and their outputs
+//----------------------------Query for post with operational arguements
+// Query Input
+/**
+ * query{
+	post(queryTitleOrBody:"demo"){
+    title
+    authorId
+  }
+}
+ */
+//------------------------------
+//Query Output
+/**
+ * {
+  "data": {
+    "post": [
+      {
+        "title": "Demo Post",
+        "authorId": "1"
+      }
+    ]
+  }
+}
+*/
+
+//----------------------------Query Users with operational arguements on custom typed array
+// Query Input
+/**
+ * query{
+	users(query:"na"){
+    name
+    age
+  }
+}
+ */
+//------------------------------
+//Query Output
+/**
+ * {
+  "data": {
+    "users": [
+      {
+        "name": "Nagarjuna",
+        "age": 25
+      },
+      {
+        "name": "Jeevana",
+        "age": null
+      }
+    ],
+  }
+}
+*/
+
+//----------------------------Simple input and output
+// Query Input
+/**
+ * query{
+	users{
+    name
+    age
+  }
+  me{
+    id
+    email
+  }
+}
+ */
+//------------------------------
+//Query Output
+/**
+ * {
+  "data": {
+    "users": [
+      {
+        "name": "Abhishek",
+        "age": 25
+      },
+      {
+        "name": "Nagarjuna",
+        "age": 25
+      },
+      {
+        "name": "Jeevana",
+        "age": null
+      },
+      {
+        "name": "Divya",
+        "age": null
+      }
+    ],
+    "me": {
+      "id": "1",
+      "email": "abhi@course.com"
+    }
+  }
+}
+ *  */
