@@ -1,6 +1,10 @@
 import { GraphQLServer } from "graphql-yoga";
-import uuidv4 from 'uuid/v4';
 import db from "./db";
+import Mutation from "./resolvers/Mutation";
+import Post from "./resolvers/Post";
+import Query from "./resolvers/Query";
+import User from "./resolvers/User";
+import Comment from "./resolvers/Comment";
 
 /**
  * --------------------------- Setting Comments Data---------------------------------
@@ -56,134 +60,13 @@ import db from "./db";
  * For opertation we intend to perform in graphql we need to that many resolvers. Thus for now we have only one operation we intend to have only one resolver
  * */
 
+// Users and posts are having 1-to-M bi-directional-relationship
 const resolvers = {
-  Mutation:{
-    createUser(parent,args,{users},info){
-      let emailPresent = users.some(u=> u.email == args.data.email);
-      if(emailPresent){
-        throw new Error('Email Already Taken')
-      }
-      let newUser = {
-        'id':uuidv4(),
-        ...args.data
-      };
-      users.push(newUser);
-      return newUser; 
-    },
-    deleteUser(parent,args,{users},info){
-      let userIndex = users.findIndex(u=>u.id==args.userId);
-      if(userIndex == -1){ throw new Error("No User Found with given id");}
-      // removed user
-      let deletedUser = users.splice(userIndex,1);
-      console.log("deleted user",deletedUser)
-      // removing comments related to deleted user
-      comments = comments.filter(c=>c.author!=args.userId)
-      // removing posts related to deleted user
-      posts = posts.filter(post=>{
-        let match = post.author == args.userId;
-        //when you found a post that is to be deleted, remove the comments present in the post that is to be deleted
-        (match)?(comments = comments.filter(comment=>comment.post!==post.id)):(null)
-        return !match;
-      });      
-      return deletedUser[0];
-    },
-    createPost(parent,args,{posts},info){
-      let userPresent = users.some(u=>u.id==args.data.author);
-      if(!userPresent){
-        throw new Error("No Valid User Found with given ID");
-      }
-      let newPost = {
-        'id':uuidv4(),
-        ...args.data
-      };
-      posts.push(newPost);
-      return newPost;
-    },
-    deletePost(parent,args,{posts},info){
-      let postPresent = posts.findIndex(p=>p.id==args.postId);
-      if(postPresent == -1) { throw new Error("No post was found with given id")}
-      // deleting post
-      let deletedPost = posts.splice(postPresent,1,0);
-      // deleting comments related to post Id
-      comments = comments.filter(comment=>comment.post!=args.postId);
-      return deletedPost[0];
-    },
-    createComment(parent,args,{comments},info){
-      let userPresent = users.some(u=>u.id==args.data.author);
-      let postPresent = posts.find(p=>p.id==args.data.post);
-      console.log("Post",postPresent);
-      if(!userPresent){ throw new Error("User Doesnt exist"); }
-      else if(!postPresent){ throw new Error("Post Doesnt Exist");} 
-      else if(!postPresent.published){ throw new Error("Cannot Comment on Un-published posts..!!")}
-      else{
-        let newComment = {
-          'id':uuidv4(),
-          ...args
-        }
-        comments.push(newComment);
-        return newComment;
-      }
-    },
-    deleteComment(parent,args,{comments},info){
-      let commentPresent = comments.findIndex(comment=>comment.id==args.commentId);
-      if(commentPresent == -1){throw new Error("Comment with given Id was not found");}
-      let deletedComment = comments.splice(commentPresent,1,0);
-      return deletedComment[0];
-    }
-  },
-  Comment:{
-    author(parent,args,ctx,info){
-      console.log("parent",parent);
-      return users.find(e=>e.id==parent.author);
-    },
-    post(parent,args,ctx,info){
-      return posts.find(e=>e.id==parent.post);
-    }
-  },
-  // Users and posts are having 1-to-M bi-directional-relationship
-  Post:{
-    //this is our custom object to perform relational search on post to users data
-    //this runs before query--not because it is above to query object
-    author(parent,args,ctx,info){
-      // we use parent here because
-      // we need to access field 'author' parent present in post
-      // thus parent denotes 'post' object 
-      return users.find(e=>e.id==parent.author);
-    },
-    comments(parent,args,ctx,info){
-      return comments.filter(e=>e.post==parent.id);
-    }
-  },
-  User:{
-    posts(parent,args,ctx,info){
-      return posts.filter(e=>e.author==parent.id);
-    },
-    comments(parent,args,ctx,info){
-      return comments.filter(e=>e.author==parent.id);
-    }
-  },
-  Query: {
-    users(parent,args,{users},info){
-      if(args.queryName){
-        return users.filter(e=>e.name.toLowerCase().includes(args.queryName.toLowerCase()));
-      }else{
-        return users;
-      }
-    },
-    me() { //custom query resolver
-      return users.find(e=>e.name=='Abhishek');
-    },
-    post(parent,args,{posts},info) {
-      if(args.queryTitleOrBody){
-        return posts.filter(e=>e.title.toLowerCase().includes(args.queryTitleOrBody.toLowerCase())||e.body.toLowerCase().includes(args.queryTitleOrBody.toLowerCase()))
-      }else{
-        return posts;
-      }
-    },
-    comments(parent,args,{comments},info){
-        return comments;
-    }
-  },
+  Query,
+  Mutation,
+  User,
+  Post,
+  Comment
 };
 
 //declaring a server with new graphql server

@@ -34,4 +34,4 @@
             }
         });
 
-8. 
+8. Now create a dir as [`resolvers`](graphql-course/graphql-basics/src/resolvers/) in src folder, create a new file for each resolver we have (mutation, query etc.)
