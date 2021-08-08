@@ -34,6 +34,19 @@ import uuidv4 from 'uuid/v4';
  *    - confirm that Post exists and it is published, else throw error
  * 3. Run Mutation and add a comment
  * 4. use comments query to verify new comment present in comments array
+ * --------------------------- Deleting Posts Data-----------------------------------
+ * 1. define a mutation for deleting a post
+ * 2. define a resolver for above mutation
+ *    - check if above post id exists, if not throw error
+ *    - remove and return the post
+ *    - remove all comments that belongs to deleted post
+ * 3. Test above by deleting a post, verify post & comments are removed
+ * --------------------------- Deleting Comments Data-----------------------------------
+ * 1. define a mutation for deleting a comment
+ * 2. define a resolver for above mutation
+ *    - check if above post id exists, if not throw error
+ *    - remove and return the post
+ * 3. Test above by deleting a post, verify post & comments are removed
  */
 
 // Demo comments data
@@ -149,9 +162,11 @@ type Comment{
 
 type Mutation{
   createUser(data:CreateUserInput): User!
-  deleteUser(userId:ID!):User!
   createPost(data:CreatePostInput):Post!
   createComment(data:CreateCommentInput):Comment!
+  deleteUser(userId:ID!):User!
+  deletePost(postId:ID!):Post!
+  deleteComment(commentId:ID!):Comment!
 }
 
 input CreateUserInput{
@@ -199,19 +214,16 @@ const resolvers = {
       // removed user
       let deletedUser = users.splice(userIndex,1);
       console.log("deleted user",deletedUser)
-      // removed posts related to deleted user
-      posts = posts.filter(p=>p.author!=args.userId)
-      // remove comments related to deleetd user
+      // removing comments related to deleted user
       comments = comments.filter(c=>c.author!=args.userId)
-      /*posts = posts.filter(post=>{
+      // removing posts related to deleted user
+      posts = posts.filter(post=>{
         let match = post.author == args.userId;
-        if(match){
-          comments = comments.filter(comment=>comment.post!==post.id);
-        }
+        //when you found a post that is to be deleted, remove the comments present in the post that is to be deleted
+        (match)?(comments = comments.filter(comment=>comment.post!==post.id)):(null)
         return !match;
-      })
-      comments = comments.filter(comment=>comment.author!=args.userId)
-      */return deletedUser[0];
+      });      
+      return deletedUser[0];
     },
     createPost(parent,args,ctx,info){
       let userPresent = users.some(u=>u.id==args.data.author);
@@ -224,6 +236,15 @@ const resolvers = {
       };
       posts.push(newPost);
       return newPost;
+    },
+    deletePost(parent,args,ctx,info){
+      let postPresent = posts.findIndex(p=>p.id==args.postId);
+      if(postPresent == -1) { throw new Error("No post was found with given id")}
+      // deleting post
+      let deletedPost = posts.splice(postPresent,1,0);
+      // deleting comments related to post Id
+      comments = comments.filter(comment=>comment.post!=args.postId);
+      return deletedPost[0];
     },
     createComment(parent,args,ctx,info){
       let userPresent = users.some(u=>u.id==args.data.author);
@@ -240,6 +261,12 @@ const resolvers = {
         comments.push(newComment);
         return newComment;
       }
+    },
+    deleteComment(parent,args,ctx,info){
+      let commentPresent = comments.findIndex(comment=>comment.id==args.commentId);
+      if(commentPresent == -1){throw new Error("Comment with given Id was not found");}
+      let deletedComment = comments.splice(commentPresent,1,0);
+      return deletedComment[0];
     }
   },
   Comment:{
