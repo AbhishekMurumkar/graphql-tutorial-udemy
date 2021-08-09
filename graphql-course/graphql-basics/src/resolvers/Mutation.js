@@ -42,7 +42,7 @@ const Mutation = {
         if(typeof(dataToUpdate.age)!='undefined'){userPresent.age=dataToUpdate.age}
         return userPresent; 
     },
-    createPost(parent, args, { posts }, info) {
+    createPost(parent, args, { posts,users }, info) {
         let userPresent = users.some(u => u.id == args.data.author);
         if (!userPresent) {
             throw new Error("No Valid User Found with given ID");
@@ -71,7 +71,7 @@ const Mutation = {
       if(typeof(dataToUpdate.body)=="string"){postExists.body=dataToUpdate.body}
       return postExists;
     },
-    createComment(parent, args, { comments }, info) {
+    createComment(parent, args, { users,posts,comments,pubsub }, info) {
         let userPresent = users.some(u => u.id == args.data.author);
         let postPresent = posts.find(p => p.id == args.data.post);
         console.log("Post", postPresent);
@@ -81,9 +81,11 @@ const Mutation = {
         else {
             let newComment = {
                 'id': uuidv4(),
-                ...args
+                ...args.data
             }
             comments.push(newComment);
+            //adding subscription on comment creation on a post
+            pubsub.publish("COMMENT:"+args.data.post,{comment:newComment});
             return newComment;
         }
     },

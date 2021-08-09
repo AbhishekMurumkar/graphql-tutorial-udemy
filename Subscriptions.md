@@ -18,7 +18,7 @@
      2. This is just like a open socket connection between client and server, allowing server to send changes in data to client whenever there any changes to application data
      3. The Return is not fixed here, since we return data that is obtained from PubSub function
 
-## Getting Started with Subscriptions
+## Getting Started with Subscriptions & Creating an Counter with it.
 
 > Example for creating an Subscription : creating an subscription that increments an counter for each second
 
@@ -77,5 +77,7 @@
 5. For Every Subscription, we need to setup a new property that matches with name of subscription name (ex:count in subscription.js file)
 6. in subscribe function, we need to
     1. setup subscription
-
     2. data that we are going to publish
+
+## Subscriptions with real time application data
+

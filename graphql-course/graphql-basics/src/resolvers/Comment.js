@@ -1,9 +1,9 @@
 const Comment = {
-    author(parent, args, ctx, info) {
+    author(parent, args, {users}, info) {
         console.log("parent", parent);
         return users.find(e => e.id == parent.author);
     },
-    post(parent, args, ctx, info) {
+    post(parent, args, {posts}, info) {
         return posts.find(e => e.id == parent.post);
     }
 }
