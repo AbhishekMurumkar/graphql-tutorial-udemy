@@ -1,4 +1,7 @@
 # typedefinitions
+type Subscription{
+  count:Int!
+}
 type Query{
   me:User!
   users(queryName:String):[User!]! #fetch all authors of our application, note: This is a CUSTOM TYPED Array

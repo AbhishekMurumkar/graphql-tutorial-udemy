@@ -20,4 +20,5 @@ YOu can find all graphql explanations and official documentation (including appl
    7. [Operation Arguements](./operationArguements.md)
    8. [Relational Data basics](./relationaldata.md)
 4. [Mutations](./mutations.md)
-5. [Project Structure](./Project-Intro.md)
+5. [Subscriptions](./Subscriptions.md)
+6. [Project Structure](./Project-Intro.md)
