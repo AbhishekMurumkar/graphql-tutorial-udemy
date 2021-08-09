@@ -63,6 +63,14 @@ const Mutation = {
         comments = comments.filter(comment => comment.post != args.postId);
         return deletedPost[0];
     },
+    updatePost(parent,{postId,dataToUpdate},{posts},info){
+      let postExists = posts.find(p=>p.id==postId);
+      if(postExists==-1){throw new Error("No post found with given id")}
+      if(typeof(dataToUpdate.published)=="boolean"){postExists.published=dataToUpdate.published}
+      if(typeof(dataToUpdate.title)=="string"){postExists.title=dataToUpdate.title}
+      if(typeof(dataToUpdate.body)=="string"){postExists.body=dataToUpdate.body}
+      return postExists;
+    },
     createComment(parent, args, { comments }, info) {
         let userPresent = users.some(u => u.id == args.data.author);
         let postPresent = posts.find(p => p.id == args.data.post);
@@ -84,12 +92,60 @@ const Mutation = {
         if (commentPresent == -1) { throw new Error("Comment with given Id was not found"); }
         let deletedComment = comments.splice(commentPresent, 1, 0);
         return deletedComment[0];
+    },
+    updateComment(parent,{commentId,dataToUpdate},{comments},info){
+      let commentExists = comments.find(c=>c.id==commentId);
+      if(commentId==-1){throw new Error("No Comment found with given id")}
+      if(typeof(dataToUpdate.text)=="string"){commentExists.text=dataToUpdate.text;}
+      return commentExists;
     }
 }
 
 export default Mutation;
 
 // Queries and their outputs
+//----------------------------Updating below post data with some data.
+// Query Input
+/*mutation{
+	updatePost(postId:1,dataToUpdate:{title:'Changed Title',published:true}){
+    id
+    title
+    body
+    published
+  }
+}*/
+// Query Output
+/*{
+  "data": {
+    "updatePost": {
+      "id": "1",
+      "title": "Changed Title",
+      "body": "Content of the post",
+      "published": true
+    }
+  }
+}*/
+//----------------------------Updating a post data with null data.
+// Query Input
+/*mutation{
+	updatePost(postId:1,dataToUpdate:{}){
+    id
+    title
+    body
+    published
+  }
+}*/
+// Query Output
+/*{
+  "data": {
+    "updatePost": {
+      "id": "1",
+      "title": "First Post",
+      "body": "Content of the post",
+      "published": false
+    }
+  }
+}*/
 //----------------------------Updating below user data with some data.
 // Query Input
 /*mutation{
