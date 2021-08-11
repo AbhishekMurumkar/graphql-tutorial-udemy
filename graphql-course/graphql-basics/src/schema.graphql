@@ -2,6 +2,7 @@
 type Subscription{
   count:Int!
   comment(postId:ID!):Comment! # returning a comment that is just created.
+  post:Post!
 }
 type Query{
   me:User!

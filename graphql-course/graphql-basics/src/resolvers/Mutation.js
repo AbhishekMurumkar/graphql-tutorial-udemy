@@ -42,7 +42,7 @@ const Mutation = {
         if(typeof(dataToUpdate.age)!='undefined'){userPresent.age=dataToUpdate.age}
         return userPresent; 
     },
-    createPost(parent, args, { posts,users }, info) {
+    createPost(parent, args, { posts,users,pubsub }, info) {
         let userPresent = users.some(u => u.id == args.data.author);
         if (!userPresent) {
             throw new Error("No Valid User Found with given ID");
@@ -52,6 +52,9 @@ const Mutation = {
             ...args.data
         };
         posts.push(newPost);
+        if(newPost.published){
+          pubsub.publish("POST created",{post:newPost});
+        }
         return newPost;
     },
     deletePost(parent, args, { posts }, info) {

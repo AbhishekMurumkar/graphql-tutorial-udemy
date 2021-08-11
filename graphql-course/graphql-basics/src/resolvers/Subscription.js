@@ -12,10 +12,16 @@ const Subscription = {
     },
     comment: {
         subscribe(parent, { postId }, { posts, pubsub }, info) {
+            //showing only when post is published
             let postPresent = posts.find(p => p.id == postId && p.published);
             if (!postPresent) { throw new Error("no post found") }
             return pubsub.asyncIterator('COMMENT:' + postId);
         }
+    },
+    post: {
+      subscribe(parent,args,{pubsub},info){
+        return pubsub.asyncIterator("POST created");
+      }
     }
 };
 
