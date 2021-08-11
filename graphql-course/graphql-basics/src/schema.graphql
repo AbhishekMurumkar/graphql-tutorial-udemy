@@ -1,8 +1,13 @@
 # typedefinitions
 type Subscription{
   count:Int!
-  comment(postId:ID!):Comment! # returning a comment that is just created.
+  comment(postId:ID!):CommentSubscriptionPayload! # returning a comment that is just created.
   post:PostSubscriptionPayload!
+}
+
+type CommentSubscriptionPayload{
+  mutation:String!
+  data:Comment!
 }
 
 type PostSubscriptionPayload{

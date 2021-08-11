@@ -14,7 +14,7 @@ const Subscription = {
         subscribe(parent, { postId }, { posts, pubsub }, info) {
             //showing only when post is published
             let postPresent = posts.find(p => p.id == postId && p.published);
-            if (!postPresent) { throw new Error("no post found") }
+            if (!postPresent) { throw new Error("no post found  or  not a published post") }
             return pubsub.asyncIterator('COMMENT:' + postId);
         }
     },

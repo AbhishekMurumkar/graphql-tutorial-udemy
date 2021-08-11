@@ -133,20 +133,36 @@ const Mutation = {
             }
             comments.push(newComment);
             //adding subscription on comment creation on a post
-            pubsub.publish("COMMENT:"+args.data.post,{comment:newComment});
+            pubsub.publish("COMMENT:"+args.data.post,{
+              comment:{
+                mutation:"CREATED",
+                data:newComment
+              }});
             return newComment;
         }
     },
-    deleteComment(parent, args, { comments }, info) {
+    deleteComment(parent, args, { comments,pubsub }, info) {
         let commentPresent = comments.findIndex(comment => comment.id == args.commentId);
         if (commentPresent == -1) { throw new Error("Comment with given Id was not found"); }
-        let deletedComment = comments.splice(commentPresent, 1);
-        return deletedComment[0];
+        let [deletedComment] = comments.splice(commentPresent, 1);
+        pubsub.publish("COMMENT:"+deletedComment.post,{
+          comment:{
+            mutation:"DELETED",
+            data:deletedComment
+          }
+        });
+        return deletedComment;
     },
-    updateComment(parent,{commentId,dataToUpdate},{comments},info){
+    updateComment(parent,{commentId,dataToUpdate},{comments,pubsub},info){
       let commentExists = comments.find(c=>c.id==commentId);
       if(commentId==-1){throw new Error("No Comment found with given id")}
       if(typeof(dataToUpdate.text)=="string"){commentExists.text=dataToUpdate.text;}
+      pubsub.publish("COMMENT:"+commentExists.post,{
+        comment:{
+          mutation:"UPDATED",
+          data:commentExists
+        }
+      })
       return commentExists;
     }
 }
