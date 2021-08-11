@@ -1,4 +1,10 @@
 # typedefinitions
+enum MutationType{
+  CREATED,
+  UPDATED,
+  DELETED
+}
+
 type Subscription{
   count:Int!
   comment(postId:ID!):CommentSubscriptionPayload! # returning a comment that is just created.
@@ -6,14 +12,16 @@ type Subscription{
 }
 
 type CommentSubscriptionPayload{
-  mutation:String!
+  mutation:MutationType!
   data:Comment!
 }
 
 type PostSubscriptionPayload{
-  mutation:String!
+  mutation:MutationType!
   data:Post!
 }
+
+
 
 type Mutation{
   createUser(data:CreateUserInput): User!

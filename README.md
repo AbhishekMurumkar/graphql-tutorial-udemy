@@ -21,4 +21,5 @@ YOu can find all graphql explanations and official documentation (including appl
    8. [Relational Data basics](./relationaldata.md)
 4. [Mutations](./mutations.md)
 5. [Subscriptions](./Subscriptions.md)
-6. [Project Structure](./Project-Intro.md)
+6. [Enums](./enums.md)
+7. [Project Structure](./Project-Intro.md)
