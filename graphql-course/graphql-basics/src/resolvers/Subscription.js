@@ -20,7 +20,7 @@ const Subscription = {
     },
     post: {
       subscribe(parent,args,{pubsub},info){
-        return pubsub.asyncIterator("POST created");
+        return pubsub.asyncIterator("POST Changed");
       }
     }
 };

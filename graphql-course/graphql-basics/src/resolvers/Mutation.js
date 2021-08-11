@@ -53,25 +53,70 @@ const Mutation = {
         };
         posts.push(newPost);
         if(newPost.published){
-          pubsub.publish("POST created",{post:newPost});
+          pubsub.publish("POST Changed",{
+            "post":{
+              "mutation":"CREATED",
+              "data":newPost
+            }
+          });
         }
         return newPost;
     },
-    deletePost(parent, args, { posts }, info) {
+    deletePost(parent, args, { posts,comments,pubsub }, info) {
         let postPresent = posts.findIndex(p => p.id == args.postId);
         if (postPresent == -1) { throw new Error("No post was found with given id") }
         // deleting post
-        let deletedPost = posts.splice(postPresent, 1, 0);
+        let [deletedPost] = posts.splice(postPresent, 1);
         // deleting comments related to post Id
         comments = comments.filter(comment => comment.post != args.postId);
-        return deletedPost[0];
+        if(deletedPost.published){
+          pubsub.publish("POST Changed",{
+            "post":{
+              "mutation":"DELETED",
+              "data":deletedPost
+            }
+          })
+        }
+        return deletedPost;
     },
-    updatePost(parent,{postId,dataToUpdate},{posts},info){
+    updatePost(parent,{postId,dataToUpdate},{posts,pubsub},info){
       let postExists = posts.find(p=>p.id==postId);
       if(postExists==-1){throw new Error("No post found with given id")}
-      if(typeof(dataToUpdate.published)=="boolean"){postExists.published=dataToUpdate.published}
+      let originalPost = {...postExists}
+
       if(typeof(dataToUpdate.title)=="string"){postExists.title=dataToUpdate.title}
       if(typeof(dataToUpdate.body)=="string"){postExists.body=dataToUpdate.body}
+
+      if(typeof(dataToUpdate.published)=="boolean"){
+        postExists.published=dataToUpdate.published
+        //check if previously post was changed and later turn to unpublished
+        if(originalPost.published && !postExists.published){
+          //deleted post
+          pubsub.publish("POST Changed",{
+            post:{
+              mutation:"DELETED",
+              data:postExists
+            }
+          })
+        }/** originally not pblished  but now changed to published state */
+        else if(!originalPost.published && postExists.publish){
+          //created post
+          pubsub.publish("POST Changed",{
+            post:{
+              mutation:"CREATED",
+              data:postExists
+            }
+          })
+        }
+      }else if(postExists.published){
+        //simply updating post except published field
+        pubsub.publish("POST Changed",{
+          post:{
+            mutation:"UPDATED",
+            data:postExists
+          }
+        })
+      }
       return postExists;
     },
     createComment(parent, args, { users,posts,comments,pubsub }, info) {
@@ -95,7 +140,7 @@ const Mutation = {
     deleteComment(parent, args, { comments }, info) {
         let commentPresent = comments.findIndex(comment => comment.id == args.commentId);
         if (commentPresent == -1) { throw new Error("Comment with given Id was not found"); }
-        let deletedComment = comments.splice(commentPresent, 1, 0);
+        let deletedComment = comments.splice(commentPresent, 1);
         return deletedComment[0];
     },
     updateComment(parent,{commentId,dataToUpdate},{comments},info){

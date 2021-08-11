@@ -9,7 +9,8 @@ const Query = {
     me() { //custom query resolver
         return users.find(e => e.name == 'Abhishek');
     },
-    post(parent, args, { posts }, info) {
+    posts(parent, args, { posts }, info) {
+      console.log(posts);
         if (args.queryTitleOrBody) {
             return posts.filter(e => e.title.toLowerCase().includes(args.queryTitleOrBody.toLowerCase()) || e.body.toLowerCase().includes(args.queryTitleOrBody.toLowerCase()))
         } else {

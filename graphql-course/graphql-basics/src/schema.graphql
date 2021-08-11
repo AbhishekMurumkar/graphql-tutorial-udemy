@@ -2,35 +2,12 @@
 type Subscription{
   count:Int!
   comment(postId:ID!):Comment! # returning a comment that is just created.
-  post:Post!
+  post:PostSubscriptionPayload!
 }
-type Query{
-  me:User!
-  users(queryName:String):[User!]! #fetch all authors of our application, note: This is a CUSTOM TYPED Array
-  post(queryTitleOrBody:String):[Post!]!
-  comments:[Comment]
-}
-type User{
- id: ID!
- name: String!
- email:String!
- age: Int,
- posts:[Post!]
- comments:[Comment]
-} 
-type Post{
-  id:ID!
-  title:String!
-  body:String!
-  published:Boolean!
-  author:User! #relational data
-  comments:[Comment]
-}
-type Comment{
-  id:ID!,
-  text:String!,
-  author:User!
-  post:Post!
+
+type PostSubscriptionPayload{
+  mutation:String!
+  data:Post!
 }
 
 type Mutation{
@@ -78,4 +55,34 @@ input CreateCommentInput{
   text:String!
   post:ID!
   author:ID!
+}
+
+type User{
+ id: ID!
+ name: String!
+ email:String!
+ age: Int,
+ posts:[Post!]
+ comments:[Comment]
+} 
+type Post{
+  id:ID!
+  title:String!
+  body:String!
+  published:Boolean!
+  author:User! #relational data
+  comments:[Comment]
+}
+type Comment{
+  id:ID!,
+  text:String!,
+  author:User!
+  post:Post!
+}
+
+type Query{
+  me:User!
+  users(queryName:String):[User!]! #fetch all authors of our application, note: This is a CUSTOM TYPED Array
+  posts(queryTitleOrBody:String):[Post!]!
+  comments:[Comment]
 }
